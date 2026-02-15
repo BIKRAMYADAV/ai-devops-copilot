@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 require('dotenv').config()
+const MONGO_URI = process.env.MONGO_URI
 
 
 exports.ConnectDB = async () => {
@@ -9,6 +10,6 @@ exports.ConnectDB = async () => {
         console.log('connected to auth database')
     }
   } catch (error){
-    console.log('failed to set up auth database')
+    console.log('failed to set up auth database', error)
   }
 }
