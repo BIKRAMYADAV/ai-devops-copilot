@@ -2,6 +2,8 @@
 const auth = require('../models/authModel')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+require('dotenv').config()
+const SECRET_KEY = process.env.SECRET_KEY
 
 exports.Register = async (req, res) => {
    try{
