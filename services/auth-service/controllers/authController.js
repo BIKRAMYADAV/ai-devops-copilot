@@ -8,7 +8,11 @@ const SECRET_KEY = process.env.SECRET_KEY
 
 exports.Register = async (req, res) => {
     const reqId = req.headers['x-request-id'] || 'unknown'
-    
+    logger.info({
+        event: 'register_attempt',
+        reqId,
+        email: req.body.email 
+    })
    try{
      const {name, email, password} = req.body;
     if(!name || !email || !password){
@@ -18,6 +22,11 @@ exports.Register = async (req, res) => {
     }
     const user = await auth.findOne({email});
     if(user){
+        logger.warn({
+            event: 'register_user_exists',
+            reqId,
+            email
+        })
        return res.status(400).json({
             message: "user already exists, login instead"
         })
@@ -28,6 +37,7 @@ exports.Register = async (req, res) => {
     })
     const addedUser = await newUser.save();
     if(addedUser){
+        logger.info({ event: 'register_success', requestId, email });
         return res.status(200).json({
             message: "new registration successful",
             addedUser
@@ -35,6 +45,12 @@ exports.Register = async (req, res) => {
     }
    } catch (error){
     console.log('There was an error in registering the user', error)
+      logger.error({
+      event: 'register_error',
+      requestId,
+      error: error.message,
+      stack: error.stack
+    });
     return res.status(500).json({
         message: 'server error'
     })
