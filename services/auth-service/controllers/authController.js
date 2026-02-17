@@ -20,7 +20,7 @@ exports.Register = async (req, res) => {
         })
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new user({
+    const newUser = new auth({
         name, email, password:hashedPassword
     })
     const addedUser = await newUser.save();
@@ -31,7 +31,7 @@ exports.Register = async (req, res) => {
         })
     }
    } catch (error){
-    console.log('There was an error in registering the user')
+    console.log('There was an error in registering the user', error)
     return res.status(500).json({
         message: 'server error'
     })
@@ -46,7 +46,7 @@ exports.Login = async (req, res) => {
                 message: "fields missing"
             })
         }
-        const userFound = await user.findOne({email});
+        const userFound = await auth.findOne({email});
         if(!userFound){
            return res.status(400).json({
                 message: "user not found, register first"
@@ -58,7 +58,11 @@ exports.Login = async (req, res) => {
                 message: "incorrect password"
             })
         }
-        const token = await jwt.sign(password, SECRET_KEY); 
+       const token = jwt.sign(
+  { id: userFound._id, email: userFound.email },
+  SECRET_KEY,
+  { expiresIn: "1d" }
+);
         return res.status(200).json({
             message:"login successful",
             token
