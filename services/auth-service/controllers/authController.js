@@ -1,9 +1,9 @@
-//register, login
 const auth = require('../models/authModel')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 const logger = require('../utils/logger.js')
+
 const SECRET_KEY = process.env.SECRET_KEY
 
 exports.Register = async (req, res) => {
@@ -44,7 +44,6 @@ exports.Register = async (req, res) => {
         })
     }
    } catch (error){
-    console.log('There was an error in registering the user', error)
       logger.error({
       event: 'register_error',
       requestId,
@@ -58,21 +57,42 @@ exports.Register = async (req, res) => {
 }
 
 exports.Login = async (req, res) => {
+    const reqId = req.headers['x-request-id'] || 'unknown'
+    logger.info({
+        event: 'login_attempt',
+        reqId,
+        email: req.body.email 
+    })
+
     try{
         const {email, password} = req.body;
         if(!email || !password){
+            logger.warn({
+                event: 'login_validation_failed',
+                reqId
+            })
            return res.status(400).json({
                 message: "fields missing"
             })
         }
         const userFound = await auth.findOne({email});
         if(!userFound){
+            logger.warn({
+                event: 'login_user_not_found',
+                reqId,
+                email
+            })
            return res.status(400).json({
                 message: "user not found, register first"
             })
         }
         const passMatch = await bcrypt.compare(password, userFound.password);
         if(!passMatch){
+            logger.warn({
+                event: 'login_invalid_passwrod',
+                reqId,
+                email
+            })
             return res.status(400).json({
                 message: "incorrect password"
             })
@@ -82,13 +102,23 @@ exports.Login = async (req, res) => {
   SECRET_KEY,
   { expiresIn: "1d" }
 );
+        logger.info({
+            event: 'login_success',
+            reqId,
+            email
+        })
         return res.status(200).json({
             message:"login successful",
             token
         })
 
     } catch(error){
-         console.log('There was an error while logging in')
+         logger.error({
+            event: 'login_error',
+      requestId,
+      error: error.message,
+      stack: error.stack
+         })
          return res.status(500).json({
         message: 'server error'
     })
