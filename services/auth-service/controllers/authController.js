@@ -3,9 +3,12 @@ const auth = require('../models/authModel')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
+const logger = require('../utils/logger.js')
 const SECRET_KEY = process.env.SECRET_KEY
 
 exports.Register = async (req, res) => {
+    const reqId = req.headers['x-request-id'] || 'unknown'
+    
    try{
      const {name, email, password} = req.body;
     if(!name || !email || !password){
