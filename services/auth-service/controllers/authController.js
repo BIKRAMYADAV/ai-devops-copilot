@@ -3,11 +3,15 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 const logger = require('../utils/logger.js')
+const {loginAttempts, loginFailures, requestDuration} = require('../utils/metrics.js')
 
 const SECRET_KEY = process.env.SECRET_KEY
 
 exports.Register = async (req, res) => {
     const reqId = req.headers['x-request-id'] || 'unknown'
+  
+
+
     logger.info({
         event: 'register_attempt',
         reqId,
@@ -22,6 +26,7 @@ exports.Register = async (req, res) => {
     }
     const user = await auth.findOne({email});
     if(user){
+
         logger.warn({
             event: 'register_user_exists',
             reqId,
@@ -58,6 +63,8 @@ exports.Register = async (req, res) => {
 
 exports.Login = async (req, res) => {
     const reqId = req.headers['x-request-id'] || 'unknown'
+      loginAttempts.inc()
+   const end =  requestDuration.startTimer();
     logger.info({
         event: 'login_attempt',
         reqId,
@@ -67,6 +74,8 @@ exports.Login = async (req, res) => {
     try{
         const {email, password} = req.body;
         if(!email || !password){
+        loginFailures.inc()
+
             logger.warn({
                 event: 'login_validation_failed',
                 reqId
@@ -77,6 +86,8 @@ exports.Login = async (req, res) => {
         }
         const userFound = await auth.findOne({email});
         if(!userFound){
+        loginFailures.inc()
+
             logger.warn({
                 event: 'login_user_not_found',
                 reqId,
@@ -88,6 +99,8 @@ exports.Login = async (req, res) => {
         }
         const passMatch = await bcrypt.compare(password, userFound.password);
         if(!passMatch){
+        loginFailures.inc()
+
             logger.warn({
                 event: 'login_invalid_passwrod',
                 reqId,
@@ -113,6 +126,8 @@ exports.Login = async (req, res) => {
         })
 
     } catch(error){
+        loginFailures.inc()
+
          logger.error({
             event: 'login_error',
       requestId,
@@ -122,5 +137,7 @@ exports.Login = async (req, res) => {
          return res.status(500).json({
         message: 'server error'
     })
+    } finally {
+        end();//latency must be recorded
     }
 }

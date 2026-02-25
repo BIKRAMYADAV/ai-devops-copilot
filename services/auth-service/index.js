@@ -5,6 +5,7 @@ const authRoutes = require('./routes/authRoutes')
 const PORT = process.env.PORT
 const app = express()
 const crypto = require('crypto')
+const {register} = require('./utils/metrics')
 
 app.use(express.json())
 
@@ -15,8 +16,15 @@ app.use((req, res, next) => {
     next();
 })
 
+app.get('/metrics', async (req, res) => {
+    res.set('Content-Type',register.contentType )
+    res.end(await register.metrics());
+})
+
 app.use('/auth',authRoutes);
 
 app.listen(PORT, () => {
     console.log(`the auth service is live on port ${PORT}`)
 })
+
+//metrics : error, latency and traffic
