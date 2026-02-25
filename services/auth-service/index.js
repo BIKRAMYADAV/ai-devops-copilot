@@ -2,7 +2,7 @@ const express = require('express')
 require('dotenv').config()
 const {ConnectDB}= require('./configs/db')
 const authRoutes = require('./routes/authRoutes')
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 3000
 const app = express()
 const crypto = require('crypto')
 const {register} = require('./utils/metrics')
