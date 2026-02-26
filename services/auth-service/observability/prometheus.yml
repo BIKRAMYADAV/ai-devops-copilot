@@ -1,7 +1,7 @@
 global:
-  scrape_interval: 5s
+  scrape_interval: 4s
 
 scrape_configs:
-  - job_name: 'auth-service'
-    static-configs:
-      - targets: ['host.docker.internal:3000']
+  - job_name: prometheus
+    static_configs:
+      - targets: ["192.168.218.1:3001"]
