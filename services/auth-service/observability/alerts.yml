@@ -1,0 +1,14 @@
+groups:
+  - name: auth-alerts
+    rules:
+      - alert: HighAuthErrorRate
+        expr: (
+          rate(auth_login_failures_total[1m])
+          /
+          rate(auth_login_attempts_total[1m])
+             ) > 0.1
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "High authentication error rate detected"

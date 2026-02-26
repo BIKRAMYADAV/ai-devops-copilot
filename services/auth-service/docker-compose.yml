@@ -6,4 +6,4 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./observability:/etc/prometheus
