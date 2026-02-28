@@ -31,3 +31,17 @@ services:
     command: -config.file=/etc/promtail/config.yml
     depends_on:
       - loki
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    depends_on:
+      - prometheus
+      - loki
+
+volumes:
+  grafana-storage:
