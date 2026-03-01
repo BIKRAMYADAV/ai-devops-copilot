@@ -60,7 +60,7 @@ class Preprocessor:
         return PreprocessedData(
             cleaned_logs = cleaned_logs,
             metrics = metrics,
-            detected_anomalies=anomalies
+            detected_anomalies=anomalies,
             original_line_count=original_line_count,
             filtered_line_count=filtered_line_count,
             truncated= truncated
