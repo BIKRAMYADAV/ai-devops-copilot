@@ -40,10 +40,27 @@ class Preprocessor:
         if(len(cleaned_logs) > self.MAX_CHAR):
             cleaned_logs = cleaned_logs[-self.MAX_CHAR:]
             truncated = True
+        #anomaly detection
+        anomalies = []
+        cpu = metrics.get("cpu_usage")
+        if cpu is not None and cpu > self.CPU_THRESHOLD:
+            anomalies.append("high cpu usage detected "+cpu+"%")
+        memory = metrics.get("memory_usage")
+        if memory is not None and memory > self.MEMORY_THRESHOLD:
+            anomalies.append("high memory usage detecte"+memory+"%")
+
+        error_rate = metrics.get("error_rate")
+        if error_rate is not None and error_rate > self.ERROR_RATE_THRESHOLD:
+            anomalies.append("high error rate detected"+error_rate+"%")
+
+        latency = metrics.get('request_latency_ms')
+        if latency is not None and latency > self.LATENCY_THRESHOLD:
+            anomalies.append(f"high request latency detected ({latency} ms)")
         
         return PreprocessedData(
             cleaned_logs = cleaned_logs,
             metrics = metrics,
+            detected_anomalies=anomalies
             original_line_count=original_line_count,
             filtered_line_count=filtered_line_count,
             truncated= truncated
