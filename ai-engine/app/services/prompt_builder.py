@@ -1,6 +1,8 @@
 from typing import List, Dict 
 from app.services.preprocessor import PreprocessedData
+from dataclasses import dataclass
 
+@dataclass
 class PromptBuilder:
     def build_messages(
             self,
@@ -49,7 +51,7 @@ The JSON response must follow this exact schema:
             formatted_anomalies
         }
         Relevant Logs : {
-            PreprocessedData.cleaned_logs
+            processed_data.cleaned_logs
         }
 """
         return [
