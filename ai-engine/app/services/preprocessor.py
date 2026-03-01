@@ -34,8 +34,8 @@ class Preprocessor:
         filtered_line_count = len(filtered_lines)
         #limiting to last N
         if(filtered_line_count > self.MAX_LINES):
-            filtered_line_count = filtered_line_count[-self.MAX_LINES:]
-        cleaned_logs = "/n".join(filtered_lines)
+            filtered_lines = filtered_lines[-self.MAX_LINES:]
+        cleaned_logs = "\n".join(filtered_lines)
         truncated = False
         if(len(cleaned_logs) > self.MAX_CHAR):
             cleaned_logs = cleaned_logs[-self.MAX_CHAR:]
@@ -44,14 +44,14 @@ class Preprocessor:
         anomalies = []
         cpu = metrics.get("cpu_usage")
         if cpu is not None and cpu > self.CPU_THRESHOLD:
-            anomalies.append("high cpu usage detected "+cpu+"%")
+            anomalies.append(f"high cpu usage detected {cpu}%")
         memory = metrics.get("memory_usage")
         if memory is not None and memory > self.MEMORY_THRESHOLD:
-            anomalies.append("high memory usage detecte"+memory+"%")
+            anomalies.append(f"high memory usage detected {memory}%")
 
         error_rate = metrics.get("error_rate")
         if error_rate is not None and error_rate > self.ERROR_RATE_THRESHOLD:
-            anomalies.append("high error rate detected"+error_rate+"%")
+            anomalies.append(f"high error rate detected {error_rate} %")
 
         latency = metrics.get('request_latency_ms')
         if latency is not None and latency > self.LATENCY_THRESHOLD:
