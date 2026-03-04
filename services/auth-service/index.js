@@ -2,6 +2,7 @@ const express = require('express')
 require('dotenv').config()
 const {ConnectDB}= require('./configs/db')
 const authRoutes = require('./routes/authRoutes')
+const analyzeRoute = require('./routes/analyze')
 const PORT = process.env.PORT
 const app = express()
 const crypto = require('crypto')
@@ -22,6 +23,7 @@ app.get('/metrics', async (req, res) => {
 })
 
 app.use('/auth',authRoutes);
+app.use('/api', analyzeRoute);
 
 app.listen(PORT, () => {
     console.log(`the auth service is live on port ${PORT}`)
