@@ -7,9 +7,10 @@ const PORT = process.env.PORT
 const app = express()
 const crypto = require('crypto')
 const {register} = require('./utils/metrics')
+const cors = require('cors')
 
 app.use(express.json())
-
+app.use(cors())
 ConnectDB();
 
 app.use((req, res, next) => {
@@ -24,6 +25,8 @@ app.get('/metrics', async (req, res) => {
 
 app.use('/auth',authRoutes);
 app.use('/api', analyzeRoute);
+
+
 
 app.listen(PORT, () => {
     console.log(`the auth service is live on port ${PORT}`)
