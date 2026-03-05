@@ -1,23 +1,26 @@
 const axios = require('axios')
+const {getMetrics} = require('../../../observability/promService')
+const {getLogs} = require('../../../observability/lokiService')
 
 exports.analyzeController = async (req, res) => {
     try {
         const {service_name, time_range} = req.body 
 
         //dummy
-            const logs = `
-ERROR: Database connection timeout
-WARN: Retry failed
-Exception: TimeoutError
-`;
+//             const logs = `
+// ERROR: Database connection timeout
+// WARN: Retry failed
+// Exception: TimeoutError
+// `;
 
-    const metrics = {
-      cpu_usage: 91,
-      memory_usage: 82,
-      error_rate: 12.3,
-      request_latency_ms: 610
-    };
-
+//     const metrics = {
+//       cpu_usage: 91,
+//       memory_usage: 82,
+//       error_rate: 12.3,
+//       request_latency_ms: 610
+//     };
+        const logs = await getLogs(service_name);
+        const metrics = await getMetrics(service_name);
 
         const response = await axios.post("http://localhost:8000/api/v1/analyze", {
             service_name,

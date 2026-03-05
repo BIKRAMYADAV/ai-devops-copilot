@@ -11,6 +11,7 @@ const cors = require('cors')
 
 app.use(express.json())
 app.use(cors())
+
 ConnectDB();
 
 app.use((req, res, next) => {
